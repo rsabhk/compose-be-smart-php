@@ -1,0 +1,8 @@
+sources
+be-php-smart
+docker-php-backend
+php-backend
+simrs_harkit
+Dockerfile.nginx
+*.bak
+*.log

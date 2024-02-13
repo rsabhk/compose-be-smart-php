@@ -1,0 +1,58 @@
+version: '3.7'
+services:
+
+  #PHP Service
+  app-smart-v1:
+    image: registry1.rsabhk.co.id:5080/rsabhk/be-smart-php:staging
+    container_name: staging-be-smart-php
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - php-content:/var/www
+      - ./sources/bootstrap/cache/config.php.docker.prod:/var/www/bootstrap/cache/config.php
+      #- ./sources/bootstrap/cache/config.php.docker.dev:/var/www/bootstrap/cache/config.php
+      #- ./sources/.env.prod:/var/www/smart/.env
+      #- ./sources/.env_dev:/var/www/.env
+      #- ./simrs_harkit:/var/www/html/simrs_harkit
+      - ./php.conf/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./php.conf/www.conf:/usr/local/etc/php-fpm.d/www.conf
+    networks:
+      - php-v1-network
+
+##Nginx Service
+  backend-ws:
+    image: nginx:alpine
+    container_name: be-smart-v1
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www
+    ports:
+      - "8222:80"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - php-content:/var/www
+      - ./nginx.conf/:/etc/nginx/conf.d
+      #- ./simrs_harkit:/var/www/simrs_harkit
+      #- ./nginx/.htaccess:/var/www/.htaccess:ro
+    networks:
+      - php-v1-network
+
+#Docker Networks
+networks:
+  php-v1-network:
+    driver: bridge
+
+volumes:
+  php-content:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /mnt/docker/staging-php-smart/sources
+
+
