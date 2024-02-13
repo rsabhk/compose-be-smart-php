@@ -1,0 +1,1 @@
+git clone ssh://userdev@repo.rsabhk.lan:/volume1/git/legacy/be-php-smart.git sources
